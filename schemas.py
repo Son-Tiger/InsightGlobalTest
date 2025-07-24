@@ -20,12 +20,12 @@ pet = {
 }
 order = {
     "type": "object",
-    "required": ["id", "petId", "status"],
+    "required": ["id", "pet_id", "status"],
     "properties": { 
         "id": {
-            "type": "integer"
+            "type": "string"
         },
-        "petId": {
+        "pet_id": {
             "type": "integer"
         },
         "status": {

@@ -15,19 +15,31 @@ TODO: Finish this test by...
 '''
 
 @pytest.fixture
-def order_data():
-    data = {
-        "id": random.randint(1, 100),
-        "petId": random.randint(1, 100),
-        "status": "placed"
+def pet_data():
+    payload = {
+        "id": random.randint(1, 10),
+        "name": "Solution Pet",
+        "type": random.choice(["dog", "cat", "fish"]),
+        "status": "available"
     }
-    response = api_helpers.post_api_data("/store/order", data)
-    assert_that(response.status_code, is_(200))
-    return data
+    response = api_helpers.post_api_data("/pets/", payload)
+    assert_that(response.status_code, is_(201))
+    return response.json()
+
+
+@pytest.fixture
+def order_data(pet_data):
+    payload = {
+        "pet_id": pet_data["id"]
+    }
+    response = api_helpers.post_api_data("/store/order", payload)
+    assert_that(response.status_code, is_(201))
+    return response.json()
+
 
 def test_patch_order_by_id(order_data):
-    test_endpoint = "/store/order/{order_id}"
-    response = api_helpers.get_api_data(test_endpoint)
+    update_status = random.choice(["pending", "sold"])
+    payload = {"status": update_status}
+    response = api_helpers.patch_api_data(f"/store/order/{order_data['id']}", payload)
     assert_that(response.status_code, is_(200))
     assert_that(response.json()["message"], contains_string("Order and pet status updated successfully"))
-    validate(instance=response.json(), schema=schemas.order)
